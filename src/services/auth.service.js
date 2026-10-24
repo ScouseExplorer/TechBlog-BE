@@ -1,10 +1,6 @@
 import bcrypt from "bcryptjs";
 import env from "../config/env.js";
-
-const SINGLE_USER = {
-  id: 1,
-  role: "admin",
-};
+import { query } from "../config/db.js";
 
 export async function loginUser({ email, password }) {
   const providedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
@@ -31,5 +27,19 @@ export async function loginUser({ email, password }) {
     throw error;
   }
 
-  return { id: SINGLE_USER.id, email: expectedEmail, role: SINGLE_USER.role };
+  const result = await query(
+    "SELECT id, email, role FROM users WHERE email = $1 LIMIT 1",
+    [expectedEmail]
+  );
+  const user = result.rows[0];
+
+  if (!user) {
+    const error = new Error(
+      "Authenticated account is not present in the user database"
+    );
+    error.status = 500;
+    throw error;
+  }
+
+  return user;
 }

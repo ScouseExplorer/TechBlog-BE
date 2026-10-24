@@ -1,12 +1,14 @@
 # Security Rotation Runbook
 
-This project uses a single-user authentication model with env-based secrets.
+This project uses env-based credentials for authentication and the UUID user records in PostgreSQL for account identity and role.
 
 ## Current Required Secrets
 
 - `JWT_SECRET`
 - `SINGLE_USER_EMAIL`
 - `SINGLE_USER_PASSWORD_HASH`
+
+`SINGLE_USER_EMAIL` must match an existing row in the `users` table. Apply migrations and seed the database before signing in; the user's database UUID and role are included in the access token and used when creating posts.
 
 ## Rotation Cadence
 

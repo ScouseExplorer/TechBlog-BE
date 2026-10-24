@@ -11,6 +11,15 @@ export async function query(text, params = []) {
   return pool.query(text, params);
 }
 
+export async function isDatabaseReady() {
+  try {
+    await pool.query("SELECT 1");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function closePool() {
   await pool.end();
 }
