@@ -1,4 +1,5 @@
 import {
+  createAdminArticle,
   deleteAdminArticle,
   getAdminArticleById,
   getDashboardStats,
@@ -19,6 +20,16 @@ export async function listArticles(req, res, next) {
   try {
     const articles = await listAdminArticles();
     res.status(200).json({ data: articles });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createArticle(req, res, next) {
+  try {
+    const { title, slug, body, published, excerpt, tags } = req.body;
+    const article = await createAdminArticle({ title, slug, body, published, excerpt, tags, authorId: req.user.sub });
+    res.status(201).json({ data: article });
   } catch (error) {
     next(error);
   }

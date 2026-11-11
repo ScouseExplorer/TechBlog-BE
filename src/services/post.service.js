@@ -2,7 +2,7 @@ import { query } from "../config/db.js";
 
 export async function listPosts() {
   const result = await query(
-    "SELECT id, title, slug, body, author_id, published, created_at, updated_at FROM posts ORDER BY created_at DESC"
+    "SELECT id, title, slug, body, author_id, published, published_at, created_at, updated_at FROM posts WHERE published = true AND archived = false ORDER BY published_at DESC NULLS LAST, created_at DESC"
   );
   return result.rows;
 }

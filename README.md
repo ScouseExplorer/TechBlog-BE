@@ -24,6 +24,14 @@ Express + PostgreSQL backend for TechBlog.
 - Liveness: `GET /api/health`
 - Readiness (checks DB): `GET /api/ready`
 
+## Admin Article Endpoints
+
+- `GET /api/admin/articles`
+- `POST /api/admin/articles`
+- `GET /api/admin/articles/:articleId`
+- `PATCH /api/admin/articles/:articleId`
+- `DELETE /api/admin/articles/:articleId` (soft delete: archives the post)
+
 ## Production Runbook (Short)
 
 1. Configure required env vars: `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `SINGLE_USER_EMAIL`, `SINGLE_USER_PASSWORD_HASH`, `CORS_ALLOWED_ORIGINS`.
