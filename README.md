@@ -19,6 +19,18 @@ Express + PostgreSQL backend for TechBlog.
 5. Start the API:
    - `npm start`
 
+## Local Containers
+
+The Compose stack runs the backend and PostgreSQL as separate services. Docker Compose v2.30+ is required. Create `.env` from `.env.example`, then start both services:
+
+```sh
+docker compose up --build
+```
+
+The backend waits for PostgreSQL, runs pending migrations, and listens at `http://localhost:3000`. PostgreSQL data is kept in the `postgres_data` volume. The Compose database credentials are for local development only; configure production credentials and run migrations separately as described below.
+
+Stop the services with `docker compose down`. To also delete the local database volume, run `docker compose down --volumes`.
+
 ## Health Endpoints
 
 - Liveness: `GET /api/health`
@@ -34,9 +46,11 @@ Express + PostgreSQL backend for TechBlog.
 
 ## Production Runbook (Short)
 
-1. Configure required env vars: `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `SINGLE_USER_EMAIL`, `SINGLE_USER_PASSWORD_HASH`, `CORS_ALLOWED_ORIGINS`.
-2. Rotate secrets before first deploy and after any exposure.
-3. Deploy build, then run `npm run db:migrate` once per release.
-4. Start app and verify `GET /api/health` returns 200.
-5. Verify `GET /api/ready` returns 200 before routing traffic.
-6. If deploy fails after migration, roll forward with a fix migration; avoid manual table edits.
+1. Configure `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `SINGLE_USER_EMAIL`, `SINGLE_USER_PASSWORD_HASH`, and `CORS_ALLOWED_ORIGINS`. Store database credentials and auth secrets in Secret Manager rather than source control.
+2. Set `CORS_ALLOWED_ORIGINS` to the exact deployed Vercel origin(s), comma-separated. Add `https://www.techblog.com` when it is live; do not include localhost in production.
+3. Configure `TRUST_PROXY` for the Cloud Run ingress path so Express can use the forwarded client IP for rate limiting. Use `1` for direct Cloud Run ingress; adjust for any additional load balancer/proxy hops. Avoid `true` unless all forwarded headers are controlled. Cloud Run supplies `PORT`; the server listens on that value.
+4. Rotate secrets before first deploy and after any exposure.
+5. Deploy build, then run `npm run db:migrate` once per release.
+6. Start app and verify `GET /api/health` returns 200.
+7. Verify `GET /api/ready` returns 200 before routing traffic.
+8. If deploy fails after migration, roll forward with a fix migration; avoid manual table edits.
