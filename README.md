@@ -19,6 +19,18 @@ Express + PostgreSQL backend for TechBlog.
 5. Start the API:
    - `npm start`
 
+## Local Containers
+
+The Compose stack runs the backend and PostgreSQL as separate services. Docker Compose v2.30+ is required. Create `.env` from `.env.example`, then start both services:
+
+```sh
+docker compose up --build
+```
+
+The backend waits for PostgreSQL, runs pending migrations, and listens at `http://localhost:3000`. PostgreSQL data is kept in the `postgres_data` volume. The Compose database credentials are for local development only; configure production credentials and run migrations separately as described below.
+
+Stop the services with `docker compose down`. To also delete the local database volume, run `docker compose down --volumes`.
+
 ## Health Endpoints
 
 - Liveness: `GET /api/health`
