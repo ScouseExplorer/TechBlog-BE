@@ -81,6 +81,16 @@ test("security headers are set and disallowed origins are rejected", async () =>
   assert.equal(ok.headers["x-content-type-options"], "nosniff");
   assert.equal(ok.headers["x-powered-by"], undefined);
 
+  const allowed = await request(app)
+    .options("/api/auth/login")
+    .set("Origin", "http://localhost:5173")
+    .set("Access-Control-Request-Method", "POST")
+    .set("Access-Control-Request-Headers", "authorization,content-type");
+  assert.equal(allowed.status, 204);
+  assert.equal(allowed.headers["access-control-allow-origin"], "http://localhost:5173");
+  assert.match(allowed.headers["access-control-allow-headers"], /Authorization/i);
+  assert.equal(allowed.headers["access-control-allow-credentials"], undefined);
+
   const blocked = await request(app).get("/api/health").set("Origin", "https://evil.example");
   assert.equal(blocked.status, 403);
   assert.equal(blocked.headers["access-control-allow-origin"], undefined);

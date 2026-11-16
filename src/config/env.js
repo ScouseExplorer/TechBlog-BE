@@ -60,8 +60,10 @@ function validateEnv(config) {
   }
 }
 
+const nodeEnv = process.env.NODE_ENV || "development";
+
 const env = {
-  NODE_ENV: process.env.NODE_ENV || "development",
+  NODE_ENV: nodeEnv,
   PORT: parseInteger(process.env.PORT || 3000, 3000),
   DATABASE_URL: process.env.DATABASE_URL || "",
   JWT_SECRET: process.env.JWT_SECRET || "change-me",
@@ -71,7 +73,7 @@ const env = {
   REDIS_URL: process.env.REDIS_URL || "",
   AUTH_RATE_LIMIT_WINDOW_MS: parseInteger(process.env.AUTH_RATE_LIMIT_WINDOW_MS || 10 * 60 * 1000, 10 * 60 * 1000),
   AUTH_RATE_LIMIT_MAX: parseInteger(process.env.AUTH_RATE_LIMIT_MAX || 5, 5),
-  CORS_ALLOWED_ORIGINS: (process.env.CORS_ALLOWED_ORIGINS || "")
+  CORS_ALLOWED_ORIGINS: (process.env.CORS_ALLOWED_ORIGINS ?? (nodeEnv === "production" ? "" : "http://localhost:5173"))
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
